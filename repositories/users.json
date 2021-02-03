@@ -1,18 +1,12 @@
 [
   {
-    "email": "mohamed",
-    "password": "123"
+    "email": "anything@gmail.com",
+    "password": "1234",
+    "id": "1d85ef54"
   },
   {
     "email": "mohamed",
-    "password": "123"
-  },
-  {
-    "email": "mohamed2",
-    "password": "1234"
-  },
-  {
-    "email": "mohamed2",
-    "password": "1234"
+    "password": "123",
+    "id": "f31a80cd"
   }
 ]
