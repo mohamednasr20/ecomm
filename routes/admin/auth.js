@@ -1,6 +1,11 @@
 const usersRepo = require("../../repositories/users");
 const express = require("express");
 const { check, validationResult } = require("express-validator");
+const {
+  requireEmail,
+  requirePassword,
+  requirePasswordConfirmation,
+} = require("./validators");
 
 const signupTemplate = require("../../views/admin/signup");
 const signinTemplate = require("../../views/admin/signin");
@@ -13,24 +18,12 @@ router.get("/signup", (req, res) => {
 
 router.post(
   "/signup",
-  [
-    check("email").trim().normalizeEmail().isEmail(),
-    check("password").trim().isLength({ min: 4, max: 20 }),
-    check("passwordConfirmation").trim().isLength({ min: 4, max: 20 }),
-  ],
+  [requireEmail, requirePassword, requirePasswordConfirmation],
   async (req, res) => {
     const errors = validationResult(req);
+    console.log(errors);
 
     const { email, password, passwordConfirmation } = req.body;
-
-    const existingUsers = await usersRepo.getOneBy({ email });
-    if (existingUsers) {
-      return res.send("Email In Use");
-    }
-
-    if (password !== passwordConfirmation) {
-      return res.send("passwords must match");
-    }
 
     const user = await usersRepo.create({ email, password });
     req.session.userId = user.id;
