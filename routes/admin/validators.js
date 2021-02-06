@@ -18,9 +18,38 @@ module.exports = {
   requirePasswordConfirmation: check("passwordConfirmation")
     .trim()
     .isLength({ min: 4, max: 20 })
-    .custom((passwordConfirmation, { req }) => {
+    .custom(async (passwordConfirmation, { req }) => {
       if (passwordConfirmation !== req.body.password) {
         throw new Error("passwords must match");
+      }
+    }),
+
+  requireEmailExists: check("email")
+    .trim()
+    .normalizeEmail()
+    .isEmail()
+    .withMessage("Must be a valid email")
+    .custom(async (email) => {
+      const user = await usersRepo.getOneBy({ email });
+
+      if (!user) {
+        throw new Error("Email is not valid");
+      }
+    }),
+  requirePasswordValidateForUser: check("password")
+    .trim()
+    .custom(async (password, { req }) => {
+      const user = await usersRepo.getOneBy({ email: req.body.email });
+      if (!user) {
+        throw new Error("Invalid password");
+      }
+
+      const validPassword = await usersRepo.comparePasswords(
+        user.password,
+        password
+      );
+      if (!validPassword) {
+        throw new Error("Invalid Passsword");
       }
     }),
 };
